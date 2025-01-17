@@ -1,0 +1,33 @@
+#!/bin/bash
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+	echo "Please source this script: source curl-burp [on|off] [port] (or: . curl-burp [on|off] [port])"
+	echo "See issue: https://stackoverflow.com/questions/15383082"
+	exit 1
+fi
+
+port="8080"
+
+if [[ $2 ]]; then
+	port=$2
+fi
+
+if [[ $1 == "on" ]]; then
+	export http_proxy=http://172.26.64.1:$port
+	export https_proxy=http://172.26.64.1:$port
+	echo "Proxied to burpsuite on port $port"
+elif [[ $1 == "off" ]]; then
+	unset http_proxy
+	unset https_proxy
+	echo "Proxy to burpsuite on port $port turned off"
+else
+	echo '                   __      __                   '
+	echo '  _______  _______/ /     / /_  __  ___________ '
+	echo ' / ___/ / / / ___/ /_____/ __ \/ / / / ___/ __ \'
+	echo '/ /__/ /_/ / /  / /_____/ /_/ / /_/ / /  / /_/ /'
+	echo '\___/\__,_/_/  /_/     /_.___/\__,_/_/  / .___/ '
+	echo '                                       /_/      '
+	echo -e "small proxy setup tool to route traffic from WSL2 curl to BurpSuite on Windows for monitoring HTTP requests\n"
+	echo "Usage: source curl-burp [on|off] [port] (or: . curl-burp [on|off] [port])"
+	echo "The default port is 8080 if not specified"
+fi
