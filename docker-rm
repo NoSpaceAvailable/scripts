@@ -1,0 +1,38 @@
+#!/bin/bash
+
+if [[ $1 == "container" ]]; then
+	read -r -p "Remove all containers? (Y/n) " confirm
+	if [[ $confirm == "Y" ]]; then
+		a=$(docker ps -aq)
+        	if [[ "$a" == "" ]]; then
+                	echo "There are no docker container at the moment!"
+                	exit 0
+        	fi
+        	docker rm -vf $a
+    	else
+        	echo "No action taken!"
+    	fi
+elif [[ $1 == "images" ]]; then
+    	read -r -p "Remove all images? (Y/n) " confirm
+    	if [[ $confirm == "Y" ]]; then
+        	a=$(docker images -aq)
+        	if [[ "$a" == "" ]]; then
+                	echo "There are no docker image at the moment!"
+                	exit 0
+        	fi
+        	docker rmi -f $a
+    	else
+        	echo "No action taken!"
+    	fi
+elif [[ $1 == "prune" ]]; then
+	docker system prune
+else
+	echo '       __           __                                '
+	echo '  ____/ /___  _____/ /_____  _____      _________ ___ '
+	echo ' / __  / __ \/ ___/ //_/ _ \/ ___/_____/ ___/ __ `__ \'
+	echo '/ /_/ / /_/ / /__/ ,< /  __/ /  /_____/ /  / / / / / /'
+	echo '\__,_/\____/\___/_/|_|\___/_/        /_/  /_/ /_/ /_/ '
+        echo -e "\nAn effective script to remove docker containers and images\n"                                          
+	echo -e "Usage: docker-rm [images|container|prune]\n"
+	echo "See more about prune: https://docs.docker.com/reference/cli/docker/system/prune"
+fi
