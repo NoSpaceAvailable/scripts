@@ -41,5 +41,6 @@ else
 	echo -e "Ethernet adapter vEthernet (WSL)\n"
 	echo -e "Usage: source curl-burp [on|off] [ip] [port] (or: . curl-burp [on|off] [ip] [port])\n"
 	echo "If the ip and port is not specified, use 172.26.64.1 and 8080 as default"
-	echo "Please not that the Windows machine's ip is different on each machine"
+	echo "Please note that the Windows machine's ip is different on each machine, and"
+	echo "you have to turn off the Windows firewall on WSL's ip address"
 fi
