@@ -1,33 +1,45 @@
 #!/bin/bash
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-	echo "Please source this script: source curl-burp [on|off] [port] (or: . curl-burp [on|off] [port])"
-	echo "See issue: https://stackoverflow.com/questions/15383082"
-	exit 1
+        echo "Please source this script: source curl-burp [on|off] [ip] [port] (or: . curl-burp [on|off] [ip] [port])"
+        echo "See issue: https://stackoverflow.com/questions/15383082"
+        exit 1
 fi
 
 port="8080"
+ip="172.26.64.1"
 
 if [[ $2 ]]; then
-	port=$2
+        ip=$2
+fi
+
+if [[ $3 ]]; then
+        port=$3
 fi
 
 if [[ $1 == "on" ]]; then
-	export http_proxy=http://172.26.64.1:$port
-	export https_proxy=http://172.26.64.1:$port
-	echo "Proxied to burpsuite on port $port"
+        export http_proxy=http://$ip:$port
+        export https_proxy=http://$ip:$port
+        echo "Proxied to burpsuite on port $port"
 elif [[ $1 == "off" ]]; then
-	unset http_proxy
-	unset https_proxy
-	echo "Proxy to burpsuite on port $port turned off"
+        unset http_proxy
+        unset https_proxy
+        echo "Proxy to burpsuite on port $port turned off"
 else
-	echo '                   __      __                   '
-	echo '  _______  _______/ /     / /_  __  ___________ '
-	echo ' / ___/ / / / ___/ /_____/ __ \/ / / / ___/ __ \'
-	echo '/ /__/ /_/ / /  / /_____/ /_/ / /_/ / /  / /_/ /'
-	echo '\___/\__,_/_/  /_/     /_.___/\__,_/_/  / .___/ '
-	echo '                                       /_/      '
-	echo -e "small proxy setup tool to route traffic from WSL2 curl to BurpSuite on Windows for monitoring HTTP requests\n"
-	echo "Usage: source curl-burp [on|off] [port] (or: . curl-burp [on|off] [port])"
-	echo "The default port is 8080 if not specified"
+        echo '                   __      __                   '
+        echo '  _______  _______/ /     / /_  __  ___________ '
+        echo ' / ___/ / / / ___/ /_____/ __ \/ / / / ___/ __ \'
+        echo '/ /__/ /_/ / /  / /_____/ /_/ / /_/ / /  / /_/ /'
+        echo '\___/\__,_/_/  /_/     /_.___/\__,_/_/  / .___/ '
+        echo '                                       /_/      '
+        echo "Small proxy setup tool to route traffic from "
+        echo "WSL2 curl to BurpSuite on Windows for monitoring"
+	echo -e "HTTP requests\n"
+	echo "If you don't know what is the ip of your Windows"
+	echo "machine, simply open Powershell/cmd and run the"
+	echo "command 'ipconfig', then look for IPv4 address of"
+	echo -e "Ethernet adapter vEthernet (WSL)\n"
+	echo -e "Usage: source curl-burp [on|off] [ip] [port] (or: . curl-burp [on|off] [ip] [port])\n"
+	echo "If the ip and port is not specified, use 172.26.64.1 and 8080 as default"
+	echo "Please not that the Windows machine's ip is different on each machine"
 fi
