@@ -1,0 +1,67 @@
+#!/usr/bin/python3
+
+import requests
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin
+import pwn
+import argparse
+import threading
+
+def crawl_directory(base_url, target_file="flag.txt"):
+    visited = set()
+    to_visit = [base_url]
+    
+    while to_visit:
+        current_url = to_visit.pop()
+        pwn.log.info(f"Visiting {current_url}")
+        if current_url in visited:
+            continue
+        visited.add(current_url)
+
+        try:
+            response = requests.get(current_url)
+            if response.status_code != 200:
+                continue
+            
+            if target_file in response.text:
+                pwn.log.success(f"Found {target_file} at: {current_url}{target_file}")
+                return
+            
+            soup = BeautifulSoup(response.text, "html.parser")
+            for link in soup.find_all("a", href=True):
+                href = link["href"]
+                if href == "../" or not href.endswith("/"):
+                    continue
+                full_url = urljoin(current_url, href)
+                to_visit.append(full_url)
+        except Exception as e:
+            pwn.log.error(f"Error accessing {current_url}: {e}")
+
+    pwn.log.failure(f"{target_file} not found.")
+
+parser = argparse.ArgumentParser(description="Crawl a directory for a file.")
+parser.add_argument("-u", help="The base URL to start crawling from.")
+parser.add_argument("-f", help="The file to search for.")
+parser.add_argument("-t", help="The number of threads to use. [UNDER DEVELOPMENT]", default=1, type=int)
+args = parser.parse_args()
+
+if not args.u or not args.f:
+    pwn.log.failure("You must specify a base URL and a file to search for.")
+    parser.print_help()
+    exit()
+
+base_url = args.u
+target_file = args.f
+threads = args.t
+
+crawl_directory(base_url, target_file)
+
+# thread_pool = []
+
+# for _ in range(threads):
+#     thread = threading.Thread(target=crawl_directory, args=(base_url, target_file))
+#     thread_pool.append(thread)
+
+# for i, thread in enumerate(thread_pool):
+#     pwn.log.info(f"Starting thread {i}")
+#     thread.start()
