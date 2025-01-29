@@ -7,7 +7,12 @@ import pwn
 import argparse
 import threading
 
-def crawl_directory(base_url, target_file="flag.txt"):
+def parse_header(header):
+    if header:
+        return {k.strip(): v.strip() for k, v in dict([header.split(":")]).items()}
+    return {}
+
+def crawl_directory(base_url, target_file, headers):
     visited = set()
     to_visit = [base_url]
     
@@ -19,7 +24,10 @@ def crawl_directory(base_url, target_file="flag.txt"):
         visited.add(current_url)
 
         try:
-            response = requests.get(current_url)
+            response = requests.get(
+                url = current_url,
+                headers = headers
+            )
             if response.status_code != 200:
                 continue
             
@@ -42,6 +50,7 @@ def crawl_directory(base_url, target_file="flag.txt"):
 parser = argparse.ArgumentParser(description="Crawl a directory for a file.")
 parser.add_argument("-u", help="The base URL to start crawling from.")
 parser.add_argument("-f", help="The file to search for.")
+parser.add_argument("-H", help="Headers to use in the request.")
 parser.add_argument("-t", help="The number of threads to use. [UNDER DEVELOPMENT]", default=1, type=int)
 args = parser.parse_args()
 
@@ -53,8 +62,9 @@ if not args.u or not args.f:
 base_url = args.u
 target_file = args.f
 threads = args.t
+headers = parse_header(args.H)
 
-crawl_directory(base_url, target_file)
+crawl_directory(base_url, target_file, headers)
 
 # thread_pool = []
 
