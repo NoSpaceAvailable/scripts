@@ -1,0 +1,79 @@
+#!/usr/bin/python3
+import sys
+
+RED, CYAN, GREEN, YELLOW, END = '\033[91m', '\033[96m', '\033[92m', '\033[93m', '\033[0m'
+
+def pretty_print(ip_char: list):
+    counter = 0
+    print(f"---> Binary: ", end="")
+    print(RED, end="")
+    
+    while ip_char[0] != "*":
+        print(ip_char.pop(0), end="")
+        counter += 1
+    ip_char.pop(0)      # remove "*"
+
+    if "|" in ip_char: 
+        print(CYAN, end="")
+        while ip_char[0] != "|":
+            if counter % 8 == 0: print(" ", end="")
+            print(ip_char.pop(0), end="")
+            counter += 1
+    
+    if ip_char[0] == "|": ip_char.pop(0)
+
+    print(GREEN, end="")
+    while ip_char:
+        if counter % 8 == 0: print(" ", end="")
+        print(ip_char.pop(0), end="")
+        counter += 1
+
+    print(END)
+
+
+def find_class(first_octet: int) -> int:
+    if 1 <= first_octet <= 126:
+        return 1
+    if 128 <= first_octet <= 191:
+        return 2
+    if 192 <= first_octet <= 223:
+        return 3
+    if 224 <= first_octet <= 239:
+        return 4
+    if 240 <= first_octet <= 255:
+        return 5
+    print("Invalid IP address or subnet mask! Maybe you are using a private IP address.")
+    sys.exit(1)
+
+if len(sys.argv) < 2:
+    print(f"Usage: {sys.argv[0]} <IPv4 address>")
+    print(f"Example: {sys.argv[0]} 10.10.10.10")
+    sys.exit(1)
+
+ip_part, *mask_part = sys.argv[1].split('/')
+octets = ip_part.split('.')
+mask = mask_part[0] if mask_part else None
+
+if mask:
+    try:
+        mask = int(mask)
+        if not (8 <= mask <= 32):
+            raise ValueError
+    except ValueError:
+        print("Uncommon or invalid subnet mask!")
+        sys.exit(1)
+
+if len(octets) != 4 or not all(o.isdigit() and 0 <= int(o) <= 255 for o in octets):
+    print("Invalid IPv4 address!")
+    sys.exit(1)
+
+binary_ip = list(''.join(f"{int(octet):08b}" for octet in octets))
+_class = find_class(int(octets[0]))
+
+binary_ip.insert(_class, "*")
+
+if mask:
+    binary_ip.insert(mask + 1, "|")
+
+pretty_print(binary_ip)
+print(f"--> Class: {chr(_class + 64)}")
