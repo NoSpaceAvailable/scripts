@@ -75,5 +75,12 @@ binary_ip.insert(_class, "*")
 if mask:
     binary_ip.insert(mask + 1, "|")
 
+if len(sys.argv) > 2:
+    if sys.argv[2] == "-l":
+        print("\nCOLOR LEGEND:")
+        print(RED + "RED: " + END + "Class bit(s)")
+        print(CYAN + "CYAN: " + END + "Bits that used for network id")
+        print(GREEN + "GREEN: " + END + "Bits that used for host id\n")
+
 pretty_print(binary_ip)
-print(f"--> Class: {chr(_class + 64)}")
+print(f"--> Class: {chr(_class + 64)}\n")
