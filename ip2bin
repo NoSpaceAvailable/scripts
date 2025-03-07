@@ -46,7 +46,7 @@ def find_class(first_octet: int) -> int:
     sys.exit(1)
 
 if len(sys.argv) < 2:
-    print(f"Usage: {sys.argv[0]} <IPv4 address>")
+    print(f"Usage: {sys.argv[0]} <IPv4 address> [-l]")
     print(f"Example: {sys.argv[0]} 10.10.10.10")
     sys.exit(1)
 
